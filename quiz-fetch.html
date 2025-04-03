@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dot/1.1.3/doT.min.js"></script>
+    <link rel="stylesheet" href="quiz.css">
+</head>
+
+<body>
+
+    <h1>Quiz 3</h1>
+    <div id="root"></div>
+
+    <script>
+        let questionIndex = 0;
+        const fileData = "quizData2.json";
+        let clickCount = 0;
+        let correctAnswers = 0;
+
+        let template = doT.template(`
+            <div class="question-container">
+                <h2 class="question-count">Question {{=it.questionIndex+1}}</h2>
+                <div class="svg-container">
+                    <h1 class="question-title">{{=it.data.question}}</h1>
+                    <svg width="400" height="350">
+                        {{~it.data.answers : answer : i}}
+                            <g class="answer-group" data-question="{{=it.questionIndex}}">
+                                <rect x="30" y="{{=40 + (i * 65)}}" width="340" height="50" class="rect" id="rect-{{=i}}"></rect>
+                                <text x="50" y="{{=70 + (i * 65)}}" class="text">{{=answer}}</text>
+                            </g>
+                        {{~}}
+                    </svg>
+                    <button onclick="nextQuestion()" class="nextBtn">Next</button>
+
+                </div>
+            </div>
+        `)
+
+        let resultTemplate = doT.template(`
+            <div class="result-container">
+                <div class="result-box">
+                    <h2>Quiz Completed!</h2>
+                    <p>You got {{=it.correctAnswers}} out of {{=it.totalQuestions}} correct!</p>
+                    <button onclick="restartQuiz()" class="resetBtn">Restart Quiz</button>
+                </div>
+            </div>
+        `);
+
+        //setData
+        let quizData = [];
+
+        async function dataFetch(fileToFetch) {
+            try {
+                const response = await fetch(fileToFetch);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                quizData = await response.json();
+                render(quizData[questionIndex]);
+
+            } catch (err) {
+                console.error("Error fetching quiz data:", err);
+            }
+        }
+
+        //Insert in HTML
+        //Render question and insert Event listeners
+        function render(data) {
+            document.getElementById('root').innerHTML = template({ data: data, questionIndex: questionIndex });
+            // Add event listeners after rendering
+            addClickEventToRects(data.correctAnswerIndex);
+        }
+
+        function addClickEventToRects(correctIndex) {
+            document.querySelectorAll('.answer-group').forEach((group, index) => {
+                group.addEventListener('click', () => handleAnswerClick(index, correctIndex));
+            });
+        }
+
+        function handleAnswerClick(index, correctIndex) {
+            clickCount++;
+            if (clickCount > 1) return;
+
+            let rect = document.getElementById(`rect-${index}`);
+            if (index == correctIndex) {
+                rect.setAttribute('class', 'correct-answer');
+                correctAnswers++;
+            } else {
+                rect.setAttribute('class', 'wrong-answer');
+                document.getElementById(`rect-${correctIndex}`).setAttribute('class', 'correct-answer')
+            }
+
+        }
+
+
+        function nextQuestion() {
+            if (quizData.length - 1 > questionIndex) {
+                questionIndex++;
+                clickCount = 0;
+                render(quizData[questionIndex]);
+            } else {
+                let btn = document.querySelector('.nextBtn');
+                if (btn) {
+                    btn.innerText = "See Results";
+                    btn.setAttribute('onclick', showResults());
+                }
+            }
+        }
+
+        function showResults(){
+            document.getElementById('root').innerHTML = resultTemplate({correctAnswers: correctAnswers, totalQuestions: quizData.length})
+        }
+
+        function restartQuiz(){
+            clickCount = 0;
+            questionIndex = 0;
+            render(quizData[questionIndex]);
+        }
+
+        // Fetch data when DOM is ready
+        document.addEventListener("DOMContentLoaded", () => dataFetch(fileData));
+    </script>
+
+</body>
+
+</html>
