@@ -43,7 +43,13 @@
             <div class="result-container">
                 <div class="result-box">
                     <h2>Quiz Completed!</h2>
-                    <p>You got {{=it.correctAnswers}} out of {{=it.totalQuestions}} correct!</p>
+                    <p>You got <strong>{{=it.correctAnswers}}</strong> out of <strong>{{=it.totalQuestions}}</strong> correct!</p>
+                    <p>{{if(it.correctAnswers / it.totalQuestions < 0.5){ }}
+                            Try again! :(
+                        {{ }else{ }}
+                            Well Done! :)
+                        {{ } }}
+                    </p>
                     <button onclick="restartQuiz()" class="resetBtn">Restart Quiz</button>
                 </div>
             </div>

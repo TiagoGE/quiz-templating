@@ -69,6 +69,7 @@ body {
 }
 
 .correct-answer {
+    transition: 400ms;
     fill: greenyellow;
     cursor: pointer;
     rx: 5px;
@@ -76,8 +77,62 @@ body {
 }
 
 .wrong-answer {
+    transition: 100ms;
     fill: red;
     cursor: pointer;
     rx: 5px;
     ry: 4px;
+}
+
+.result-box {
+    background-color: rgb(25, 116, 202);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.result-container {
+    display: flex;
+    justify-content: center;
+    /* Centers horizontally */
+    align-items: center;
+    /* Centers vertically */
+    height: 60vh;
+    /* Full height of the viewport */
+    margin: 0;
+}
+
+.result-box h2{
+    color: white;
+    font-size: 26px;
+}
+
+.result-box p{
+    font-size: 20px;
+    color: white;
+}
+
+.resetBtn{
+    cursor: pointer;
+    padding: 8px 10px;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.resetBtn:active{
+    transition: 300ms;
+    transform: scale(0.95);
+}
+
+.resetBtn:hover{
+    transition: 300ms;
+    background-color: rgb(220, 220, 220);
 }
